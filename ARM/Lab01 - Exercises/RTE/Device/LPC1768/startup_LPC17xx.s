@@ -117,10 +117,10 @@ CRP_Key         DCD     0xFFFFFFFF
                 ENDIF
 					
 				AREA    |.EXERCISE_2|,DATA,READWRITE
-myspace			SPACE	26
+Fibonacci_space			SPACE	26
 				
 				AREA    |.EXERCISE_3|,DATA,READWRITE
-mydataspace		SPACE	16
+stored_values			SPACE	16
 
                 AREA    |.text|, CODE, READONLY
 				
@@ -129,13 +129,30 @@ mydataspace		SPACE	16
 Reset_Handler   PROC
                 EXPORT  Reset_Handler   [WEAK]
 					
-				;BL Exercice_1
-				;BL Exercice_2
-				;BL Exercice_2_1
-				;BL Exercice_3
-				;BL Exercice_4_1
-				;BL Exercice_4_2
-				BL Exercice_4_3
+				;BL Renaming_Registers ; Branch that jumps to the first exercise of value Computation.
+				
+;--------------------------------------------------------------------------------------------------------------
+				
+				;BL Fibonacci_sequence ; Subroutine that calculates the Fibonacci sequence.
+				;BL Storing_Fibonacci ; Subroutine that stores the values of the Fibonacci in a data area both in pre-indexed and post-indexed way.
+						   
+;---------------------------------------------------------------------------------------------------------------
+				
+				;BL Literal_Pool ; Getting the values of a literal pool and store them in a data area.
+				
+;---------------------------------------------------------------------------------------------------------------
+
+				;BL UADD8_M3; Branch that jumps to the exercise that performs UADD8 on Cortex-M3 processor
+							; sums the corresponding bytes of the two registers.
+				
+;----------------------------------------------------------------------------------------------------------------				
+				
+				;BL USAD8_M3; Branch that jumps to the exercise that performs USAD8 on Cortex-M3 processor 
+						;calculate the absolute value of the substraction of two registers each  4 bytes together and sum them.
+				
+;----------------------------------------------------------------------------------------------------------------	
+			
+				BL SMUAD_SMUSD_M3
 		
                 ENDP
 					
@@ -145,101 +162,104 @@ triple_value RN r3
 quadruple_value RN r4
 quintuple_value RN r5
 
-Exercice_1   	PROC 
+Renaming_Registers   	PROC
 				
-				MOV single_value,#1
-				MOV double_value,single_value,LSL #1; shifting left the single value will multiply it by 2.
-				ADD triple_value,double_value,single_value ; adding the double value and the single value it's like multiplying by 3.
-				MOV quadruple_value,single_value,LSL #2 ; shifting left the single value 2 times is like multiplying by 4.
-				ADD quintuple_value,quadruple_value,single_value; adding the quadruple value and the single value is like multiplying by 5.
+						MOV single_value,#1
+						MOV double_value,single_value,LSL #1; shifting left the single value will multiply it by 2.
+						ADD triple_value,double_value,single_value ; adding the double value and the single value it's like multiplying by 3.
+						MOV quadruple_value,single_value,LSL #2 ; shifting left the single value 2 times is like multiplying by 4.
+						ADD quintuple_value,quadruple_value,single_value; adding the quadruple value and the single value is like multiplying by 5.
 
-				BX LR
+						BX LR
 				
-				ENDP
+						ENDP
 				
 				
 
 					
-Exercice_2      PROC
-				MOV r0,#1
-				MOV r1,#1
-				ADD r2,r1,r0
-				ADD r3,r2,r1
-				ADD r4,r3,r2
-				ADD r5,r4,r3
-				ADD r6,r5,r4
-				ADD r7,r6,r5
-				ADD r8,r7,r6
-				ADD r9,r8,r7
-				ADD r10,r9,r8
-				ADD r11,r10,r9
-				ADD r12,r11,r10
+Fibonacci_sequence	    PROC
+						MOV r0,#1
+						MOV r1,#1
+						ADD r2,r1,r0
+						ADD r3,r2,r1
+						ADD r4,r3,r2
+						ADD r5,r4,r3
+						ADD r6,r5,r4
+						ADD r7,r6,r5
+						ADD r8,r7,r6
+						ADD r9,r8,r7
+						ADD r10,r9,r8
+						ADD r11,r10,r9
+						ADD r12,r11,r10
 				
-				BX LR
+						BX LR
 				
-				ENDP
+						ENDP
 
-Exercice_2_1    PROC
-				LDR r14,=myspace
-				STRB r0,[r14,#1]!
-				STRB r1,[r14,#1]!
-				STRB r2,[r14,#1]!
-				STRB r3,[r14,#1]!
-				STRB r4,[r14,#1]!
-				STRB r5,[r14,#1]!
-				STRB r6,[r14,#1]!
-				STRB r7,[r14,#1]!
-				STRB r8,[r14,#1]!
-				STRB r9,[r14,#1]!
-				STRB r10,[r14,#1]!
-				STRB r11,[r14,#1]!
-				STRB r12,[r14,#1]!
-				ADD  r14,r14,#1
-				STRB r12,[r14],#1
-				STRB r11,[r14],#1
-				STRB r10,[r14],#1
-				STRB r9,[r14],#1
-				STRB r8,[r14],#1
-				STRB r7,[r14],#1
-				STRB r6,[r14],#1
-				STRB r5,[r14],#1
-				STRB r4,[r14],#1
-				STRB r3,[r14],#1
-				STRB r2,[r14],#1
-				STRB r1,[r14],#1
-				STRB r0,[r14],#1
+Storing_Fibonacci    	PROC
+						LDR r14,=Fibonacci_space
+;-----------------------Pre_Indexed Addressing technique to store Fibonacci in data area-----------------
+						STRB r0,[r14,#1]!
+						STRB r1,[r14,#1]!
+						STRB r2,[r14,#1]!
+						STRB r3,[r14,#1]!
+						STRB r4,[r14,#1]!
+						STRB r5,[r14,#1]!
+						STRB r6,[r14,#1]!
+						STRB r7,[r14,#1]!
+						STRB r8,[r14,#1]!
+						STRB r9,[r14,#1]!
+						STRB r10,[r14,#1]!
+						STRB r11,[r14,#1]!
+						STRB r12,[r14,#1]!
+;-----------------------Post_Indexed Addressing technique to store Fibonacci in data area-----------------
+						ADD  r14,r14,#1
+						STRB r12,[r14],#1
+						STRB r11,[r14],#1
+						STRB r10,[r14],#1
+						STRB r9,[r14],#1
+						STRB r8,[r14],#1
+						STRB r7,[r14],#1
+						STRB r6,[r14],#1
+						STRB r5,[r14],#1
+						STRB r4,[r14],#1
+						STRB r3,[r14],#1
+						STRB r2,[r14],#1
+						STRB r1,[r14],#1
+						STRB r0,[r14],#1
 				
 				BX LR
 				
 				ENDP
 					
-Exercice_3		PROC
-				LDR r0,=myConstants
-				LDR r1,=mydataspace
-				MOV r12,#4
+Literal_Pool	PROC
+				LDR r0,=Values
+				LDR r1,=stored_values
+				MOV r12,r0
 				
-loop			LDRH r3,[r0],#2
+loop			LDRH r3,[r0],#2 ; Since it is post_indexed the address of the literal pool is always rewritten after we use and then we perform the addition.
 				LDRH r4,[r0],#2
 				ADD  r5,r3,r4
 				STR	 r5,[r1],#4
-				SUBS r12,r12,#1
+				SUBS r11,r0,r12
+				CMP r11,#16 ; see the difference between the beggining of the literal pool and the end if we have an offset of 16 to get out of the loop.
 				BNE loop
 					
 				
 stop			B	stop;
-myConstants 	DCW 57721,56649, 15328,60606, 51209, 8240, 24310, 42159;
+Values			DCW 57721,56649, 15328,60606, 51209, 8240, 24310, 42159;
 
 				ENDP
 					
 
-Exercice_4_1	PROC
+UADD8_M3		PROC
 	
 				MOV32 r0,#0x7A30458D
 				MOV32 r1,#0xC3159EAA
 				MOV   r12,#4
 				MOV   r11,#0xFF ; This is the mask that we are going to use.
 						
-UADD8_M3		AND r3,r0,r11	; Keep only the HALFWORD (8 bits) 2 Hexadecimal values that you need.
+Check_1		AND r3,r0,r11	; Keep only the HALFWORD (8 bits) 2 Hexadecimal values that you need.
 				AND	r4,r1,r11	; Same as above
 				ADD r5,r5,r3	; Perform the addition
 				ADD r5,r5,r4	; Perform the addition
@@ -248,63 +268,56 @@ UADD8_M3		AND r3,r0,r11	; Keep only the HALFWORD (8 bits) 2 Hexadecimal values t
 				LSL r11,r11,#8	; We go from: 0xFF -> 0xFF00 -> 0xFF0000 ...
 				SUBS r12,r12,#1	; Decrement r12
 				CMP  r12,#0		; Compare r12 with 0.
-				BNE UADD8_M3
+				BNE Check_1
 				
 				BX LR
 				
 				ENDP
 
-Exercice_4_2	PROC
+USAD8_M3		PROC
 				
 				MOV32 r0,#0x7A30458D
 				MOV32 r1,#0xC3159EAA
 				MOV	r11,#0xFF
-				MOV r12,#4
 				
-USAD8_M3		AND r2,r0,r11
-				AND r3,r1,r11
+				
+Check_2			AND r2,r0,r11 ; When you mask with 0xFF you will keep the last two bytes and put to 0 everything else.
+				AND r3,r1,r11 ; For example: 0xFF for r1 -> 0xAA for the first iteration. 
 				CMP r2,r3
-				ITE GE
-				SUBGE r4,r2,r3
-				SUBLT r4,r3,r2
+				ITE GE		;If then else with greater or equal
+				SUBGE r4,r2,r3	;Substract if r2>r3
+				SUBLT r4,r3,r2	; substract if r2<r3
 				ADD r5,r5,r4
 				LSR r0,r0,#8 ;I need to shift right the values to be able to add them.
 				LSR r1,r1,#8 ; I need to shift right the values to be able to add them
-				SUBS r12,r12,#1
-				CMP r12,#0
-				BNE USAD8_M3
+				CMP r0,#0; Jump out the loop when r0 is empty after I do all the right shifts it will get to 0.
+				BNE Check_2
 				
 				BX LR
 				
 				
 				ENDP
 					
-Exercice_4_3	PROC
+SMUAD_SMUSD_M3	PROC
 				
 				MOV32 r0,#0x7A30458D
 				MOV32 r1,#0xC3159EAA
-				MOV32 r11,#0xFFFF
-				MOV r12,#2
+				MOV32 r11,#0xFFFF0000 ; The mask to get the upper the 4 bytes of r0,r1.
 				
-SMUAD_SMUSD_M3	AND r3,r0,r11
-				AND r4,r1,r11
-				LSL r4,r4,#16
-				ASR r4,r4,#16
-				MUL r5,r3,r4
-				ADD r6,r6,r5
-				SUB r7,r5,r7
-				LSR r0,r0,#16
-				LSR r1,r1,#16
-				SUBS r12,r12,#1
-				CMP r12,#0
-				BNE SMUAD_SMUSD_M3
+Check_3			AND r3,r0,r11 ;Getting the upper halfword of r0.
+				AND r4,r1,r11 ;Getting the upper halfword of r1.
+				LSR r3,r3,#16 ;Shift right the value of r3 so now it is represented in the Least Significant bits (LSB).
+				LSR r4,r4,#16 ; Shift right the value of r3 so now it is represented in the Least Significant 4 bits (LSB).
+				ADD r4,r4,r11 ; Adding the mask to the upper-part of r4 to change it into its two's compliment.
+				MUL r5,r3,r4  ; Multiply the two values.
+				ADD r6,r6,r5  ; this performs the SMUAD (which is the addition of the two values by multiplying the two values in upper and lower bits).
+				SUB r7,r5,r7  ; Performing the substraction between the two values obtained by the two multiplications. 
+				LSL r0,r0,#16 ; Getting the LSBs in r0 and r1 to be in the uppermost so we can perform the same thing on it.
+				LSL r1,r1,#16
+				CMP r0,#0	  ; When r0 becomes zero that means I have passed through all the values possible.
+				BNE Check_3
 				
-				
-
-				
-				
-	
-	
+		
 	
 	
 				ENDP
