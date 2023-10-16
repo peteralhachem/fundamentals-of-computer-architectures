@@ -57,12 +57,12 @@ get_string:MOV DX,offset prompt
 
 
 MOV BL,buffer[1] ; Check the length of characters.
-PUSH BX ; Keep track of the length of all the strings.
+PUSH BX ; Keep track of the length of all the strings (Needed for when the occurence is computed) 
 CMP BL,50d
-JE  write_line
+JE  write_line  ; The jump is made when you don't care about the enter condition meaning you don't have a string between 20 or 50 characters.
 CMP BL,20d
 JNAE  write_line
-JAE conditional_write_line
+JAE conditional_write_line  ; Check where the enter character comes in the string.
 
                         
 conditional_write_line: INC BP
@@ -75,7 +75,7 @@ conditional_write_line: INC BP
                         
                         
 conditional_write_line_1: MOV CL, buffer[SI+2]
-                          CMP CL, 13
+                          CMP CL, 13          ; the enter character is represented by the 13 in ascii code.
                           JE  clear_indices_for_conditional_write_line
                           MOV first_line[DI], CL
                           INC SI
@@ -196,8 +196,11 @@ find_occurence:INC BP
 ; Take each line after it was written in its respective variable.
 ; Move each letter to a variable. 
 ; Check if this variable is upper or lower case. 
-; if lower case: substract 61 to get an index,increase occurence and move the value to the index. 
+; if lower case: substract 61 to get an index,increase occurence and move the value to the index.
+; 61 was chosen because the first lower case value is a at ascii code 61. 
 ; if upper case: substract 41 and add 26 to get an index, increase occurence and move the value to the index.
+; 41 represents the ascii code of the upper case values.
+; 26 is only added since I have an array containing BOTH upper and lower cases.
                             
 
 occurence_3:MOV CL, third_line[DI]
@@ -312,7 +315,9 @@ find_max:INC BP
          CMP BP,3
          JE  find_max_3 
          
-; To find a maximum I need to assign a value to to the maximum variable then compare it with the next one.         
+;Finding the maximum relies in taking the first value of the occurence and then comparing it to the next one
+;If it is greater, it becomes the max othewise the current value remains the maximum. 
+;We iterate over all the values of the array.         
 
 find_max_1:MOV CL, occurence_array_1[BX]
            CMP DI, 0 
@@ -487,7 +492,9 @@ find_half:INC BP
           JE find_half_3 
 
 
-; ----Working with the first string----         
+; ----Working with the first string ----
+; ---- Finding half consists of comparing of all the occurences to the value of the max/2 and when a greater value is found then ----
+; ---- adding it to the half array ----         
          
 find_half_1:CMP BX,0 
             JE set_half_1
@@ -589,7 +596,7 @@ upper_case_half_2:SUB BL, 26
 ;---- Working with the third string ----                 
                   
 find_half_3:CMP BX,0 
-            JE set_half_1
+            JE set_half_3
             MOV BX,SI
             MOV DL, occurence_array_1[BX]
             CMP DL,0
@@ -647,6 +654,9 @@ clear_values_of_half: XOR BX,BX
 clear_value_of_index:XOR BP,BP
 
 
+;---- For display purposes, I am creating a unique string containing: the max character, its occurence, all the characters that have half----
+
+
 create_strings:INC BP
                CMP BP,1
                JE  create_string_1
@@ -664,14 +674,15 @@ insert_max_1:MOV CL, index_max_1
              INC SI
              MOV final_string_1[SI],20h
              INC SI
-             MOV CL,max_1
+             MOV CL,max_1 
+             ADD CL,30h
              MOV final_string_1[SI],CL
              INC SI
-             MOV final_string_1[SI],"$"
+             MOV final_string_1[SI],20h
              INC SI 
              
 insert_half_1:MOV CL,half_characters_1[DI] 
-              MOV final_string_1[SI],
+              MOV final_string_1[SI],CL
               CMP half_characters_1[DI], 0 
               JE  continue_insert_1
               
@@ -683,7 +694,9 @@ continue_insert_1: INC SI
                    JE  final_insert_string_1
                    
 
-final_insert_string_1: MOV final_string_1[SI], "$"
+final_insert_string_1: MOV final_string_1[SI], 20h
+                       INC SI
+                       MOV final_string_1[SI],"$"
                        JMP clear_indices_for_final_string
                        
                        
@@ -698,10 +711,11 @@ insert_max_2:MOV CL, index_max_2
              INC SI
              MOV final_string_2[SI],20h
              INC SI
-             MOV CL,max_2
+             MOV CL,max_2 
+             ADD CL,30h
              MOV final_string_2[SI],CL
              INC SI
-             MOV final_string_2[SI],"$"
+             MOV final_string_2[SI],20h
              INC SI 
              
 insert_half_2:MOV CL,half_characters_2[DI] 
@@ -717,7 +731,9 @@ continue_insert_2: INC SI
                    JE  final_insert_string_2
                    
 
-final_insert_string_2: MOV final_string_2[SI], "$"
+final_insert_string_2: MOV final_string_2[SI], 20h
+                       INC SI
+                       MOV final_string_2[SI],"$"
                        JMP clear_indices_for_final_string
                        
                        
@@ -731,9 +747,10 @@ insert_max_3:MOV CL, index_max_3
              MOV final_string_3[SI],20h
              INC SI
              MOV CL,max_3
+             ADD CL,30h
              MOV final_string_3[SI],CL
              INC SI
-             MOV final_string_3[SI],"$"
+             MOV final_string_3[SI],20h
              INC SI 
              
 insert_half_3:MOV CL,half_characters_3[DI] 
@@ -749,7 +766,9 @@ continue_insert_3: INC SI
                    JE  final_insert_string_3
                    
 
-final_insert_string_3: MOV final_string_3[SI], "$"
+final_insert_string_3: MOV final_string_3[SI], 20h
+                       INC SI
+                       MOV final_string_3[SI],"$"
                        JMP clear_indices_for_final_string
                    
 
