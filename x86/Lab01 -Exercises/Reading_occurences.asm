@@ -98,7 +98,7 @@ conditional_write_line_2: MOV CL, buffer[SI+2]
 
 conditional_write_line_3: MOV CL, buffer[SI+2]
                           CMP CL, 13
-                          JE  end_process
+                          JE  clear_indices_for_conditional_write_line
                           MOV third_line[DI], CL
                           INC SI
                           INC DI
