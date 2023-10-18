@@ -186,7 +186,26 @@ clear_indices_for_conditional_write_line: INC CH
                     
 clear_indices: XOR CH,CH
                XOR BP,BP
-               POP BX
+               POP BX ; I used the stack to keep track of the lengths of all the strings 
+
+
+; ----This section performs the caesar cipher of the strings taken as an input ----
+
+; ---- Iteratively cipher each string one after the other, I am starting with the last string inputed ----
+
+
+
+
+; ---- Overview on how the ciphering algorithm was implemented: I check each letter if it is a lower case, 
+; ---- alphabet or an upper case or just a random symbol ----
+; ----- If random symbol: put it directly in the ciphered text as it is not relevant to ciphering --- 
+; ----- If lower case letter: check if the index of the letter in the string is even or odd --- 
+; ------If even: it stays lower case, if odd it needs to become uppercase ----
+; ----- If upper case letter: check if the index of the letter in the string is even or odd ---
+; ----- If even: it becomes a lower case letter, if odd it stays upper case ----
+; ------ There is an honorable mention to the letter 'z' which needs to be cycled with the letters ---
+; ------ and thus I cannot directly add the cipher to the letter z before cycling to the corresponding letter----
+
                
 
 perform_cipher:INC BP
@@ -220,7 +239,7 @@ check_boundary_4: CMP CL,5Ah
                   JA continue_4
 
 
-; Check value of SI, if even then it stays lower, if odd it goes upper when ciphering                  
+                  
 
 cipher_lower_4:test SI, 1
                JZ lower_even_4
@@ -250,8 +269,6 @@ lower_odd_4:CMP CL,7Ah
             
              
 
-
-; Check value of SI, if even then it stays upper, if odd it goes lower when ciphering
 
 
 cipher_upper_4:test SI, 1
@@ -345,8 +362,7 @@ check_boundary_3: CMP CL,5Ah
                   JBE cipher_upper_3
                   JA continue_3
 
-
-; Check value of SI, if even then it stays lower, if odd it goes upper when ciphering                  
+                 
 
 cipher_lower_3:test SI, 1
                JZ lower_even_3
@@ -375,9 +391,6 @@ lower_odd_3:CMP CL,7Ah
             JE clear_indices_for_cipher
             
              
-
-
-; Check value of SI, if even then it turns lower, if odd it stays upper
 
 
 cipher_upper_3:test SI, 1
@@ -478,7 +491,7 @@ check_boundary_2: CMP CL,5Ah
                   JA continue_2
 
 
-; Check value of SI, if even then it stays lower, if odd it goes upper when ciphering                  
+                  
 
 cipher_lower_2:test SI, 1
                JZ lower_even_2
@@ -508,7 +521,6 @@ lower_odd_2:CMP CL,7Ah
              
 
 
-; Check value of SI, if even then it stays upper, if odd it goes lower when ciphering
 
 
 cipher_upper_2:test SI, 1
@@ -583,8 +595,7 @@ continue_2:MOV ciphered_second_line[SI], CL
            CMP SI,BX 
            JNE find_cipher_2
            JE clear_indices_for_cipher
-           
-           
+                     
          
          
 
@@ -606,8 +617,7 @@ check_boundary_1: CMP CL,5Ah
                   JBE cipher_upper_1
                   JA continue_1
 
-
-; Check value of SI, if even then it stays lower, if odd it goes upper when ciphering                  
+                  
 
 cipher_lower_1:test SI, 1
                JZ lower_even_1
@@ -634,10 +644,7 @@ lower_odd_1:CMP CL,7Ah
             JNE find_cipher_1
             JE clear_indices_for_cipher
             
-             
 
-
-; Check value of SI, if even then it stays upper, if odd it goes lower when ciphering
 
 
 cipher_upper_1:test SI, 1
@@ -723,34 +730,11 @@ clear_indices_for_cipher:XOR SI,SI
 
 
 
-clear_BP:XOR BP,BP  
-
-
-
-display:INC BP 
-        CMP BP,1
-        JE display_1
-        CMP BP,2
-        JE display_2
-        CMP BP,3
-        JE display_3
-        CMP BP,4
-        JE display_4
-        
-        
-       
-       
-display_1:
-
-
-display_2:
-
-
-display_3: 
-
-
-display_4:   
-                 
+clear_BP:XOR BP,BP     
+                   
+; ---- To visualize the results after running emulate, in the emulator window, on the bottom there is a 
+; ---- vars button, choose the variable inside the vars window and click on it and in the emulator you can see
+; ---- the values of the variable ---
 
 
 .exit
