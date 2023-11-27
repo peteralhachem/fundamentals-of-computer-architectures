@@ -116,286 +116,222 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
 CRP_Key         DCD     0xFFFFFFFF
                 ENDIF
 					
-;-----------------------------Areas that are considered as the Poles of the tower--------------------------------------------					
-			
-				AREA	STACK,READWRITE
-Pole1			SPACE	20
-	
-				AREA	STACK,READWRITE
-Pole2			SPACE	20
-
-				AREA	STACK,READWRITE
-Pole3			SPACE	20
+				AREA    |.EXERCISE_2|,DATA,READWRITE
+Fibonacci_space			SPACE	26
+				
+				AREA    |.EXERCISE_3|,DATA,READWRITE
+stored_values			SPACE	16
 
                 AREA    |.text|, CODE, READONLY
-
-values	DCD	9,6,3,2,1,8,7,0,5,4,0
-ex3consts		DCD 	4, 3, 2, 1, 0
-numdiscs		DCD		4
-
+				
 ; Reset Handler
 
 Reset_Handler   PROC
-                EXPORT  Reset_Handler 					[WEAK]
-                
-;------------------------------------Adding the values to the first pole-----------------------------------------------
+                EXPORT  Reset_Handler   [WEAK]
+					
+				;BL Renaming_Registers ; Branch that jumps to the first exercise of value Computation.
 				
+;--------------------------------------------------------------------------------------------------------------
+				
+				;BL Fibonacci_sequence ; Subroutine that calculates the Fibonacci sequence.
+				;BL Storing_Fibonacci ; Subroutine that stores the values of the Fibonacci in a data area both in pre-indexed and post-indexed way.
+						   
+;---------------------------------------------------------------------------------------------------------------
+				
+				;BL Literal_Pool ; Getting the values of a literal pool and store them in a data area.
+				
+;---------------------------------------------------------------------------------------------------------------
 
-				LDR r0,=values
-				LDR r1,=Pole1
-				PUSH {r0,r1}
+				;BL UADD8_M3; Branch that jumps to the exercise that performs UADD8 on Cortex-M3 processor
+							; sums the corresponding bytes of the two registers.
 				
+;----------------------------------------------------------------------------------------------------------------				
 				
-				BL fillStack
+				;BL USAD8_M3; Branch that jumps to the exercise that performs USAD8 on Cortex-M3 processor 
+						;calculate the absolute value of the substraction of two registers each  4 bytes together and sum them.
 				
-				POP {r0,r1}
-				
-				
-				
-;-------------------------------------Adding the values to the second pole-----------------------------------------------
-
-				
-				LDR r2,=Pole2 ; Here I just load the value of r2 without loading the value of r0 because I want to keep the value that was popped
-							; from the first pole
-				
-				PUSH {r0,r2}
-				
-				BL fillStack
-				
-				POP {r0,r2}
-				
-;-------------------------------------Adding the values to the third pole--------------------------------------------------
-				
-				LDR r3,=Pole3	; Here I just load the value of r3 without loading the value of r0 because I want to keep the value that was popped
-							; from the second pole
-				
-				
-				PUSH {r0,r3}
-				
-				BL fillStack
-				
-				POP {r0,r3}
-				
-;----------------------------------Moving one disk from one pole to another------------------------------------------------
-
-				MOV r0,#0 		; Contains the return value
-								
-				
-				PUSH {r1}
-				PUSH {r2}
-				PUSH {r0}
-				BL	move1
-				POP {r0}
-				POP	{r2}
-				POP {r1}
-				
-				LDR r0,=ex3consts ;Loading the constants that are used in the numerous move scenario
-				LDR r1,=Pole1 ;Loading the address of the source-pole
-				
-				PUSH {r1}
-				PUSH {r0}
-				
-				BL fillStack ; Filling the source-pole with all the values.
-				
-				POP {r0,r1} 
-				
-				LDR r2,=Pole2 ; Loading the address of the destination pole.
-				LDR r3,=Pole3 ; Loading the address of the auxiliary pole.
-				LDR r0,=numdiscs ; Loading the address of the number of disks we want to move.
-				LDR r0,[r0] ; Loading the value of the number of disks. 
-				
-
-				PUSH {r1}
-				PUSH {r2}
-				PUSH {r3}
-				PUSH {r0}
-				
-				BL moveN
-				
-				POP {r0}
-				POP {r3}
-				POP {r2}
-				POP {r1}
-				
+;----------------------------------------------------------------------------------------------------------------	
+			
+				BL SMUAD_SMUSD_M3
 		
-				
-				
-
-
-				
-stop			B	stop              
                 ENDP
 					
+single_value RN r1
+double_value RN r2
+triple_value RN r3
+quadruple_value RN r4
+quintuple_value RN r5
+
+Renaming_Registers   	PROC
+				
+						MOV single_value,#1
+						MOV double_value,single_value,LSL #1; shifting left the single value will multiply it by 2.
+						ADD triple_value,double_value,single_value ; adding the double value and the single value it's like multiplying by 3.
+						MOV quadruple_value,single_value,LSL #2 ; shifting left the single value 2 times is like multiplying by 4.
+						ADD quintuple_value,quadruple_value,single_value; adding the quadruple value and the single value is like multiplying by 5.
+
+						BX LR
+				
+						ENDP
+				
+				
+
+					
+Fibonacci_sequence	    PROC
+						MOV r0,#1
+						MOV r1,#1
+						ADD r2,r1,r0
+						ADD r3,r2,r1
+						ADD r4,r3,r2
+						ADD r5,r4,r3
+						ADD r6,r5,r4
+						ADD r7,r6,r5
+						ADD r8,r7,r6
+						ADD r9,r8,r7
+						ADD r10,r9,r8
+						ADD r11,r10,r9
+						ADD r12,r11,r10
+				
+						BX LR
+				
+						ENDP
+
+Storing_Fibonacci    	PROC
+						LDR r14,=Fibonacci_space
+;-----------------------Pre_Indexed Addressing technique to store Fibonacci in data area-----------------
+						STRB r0,[r14,#1]!
+						STRB r1,[r14,#1]!
+						STRB r2,[r14,#1]!
+						STRB r3,[r14,#1]!
+						STRB r4,[r14,#1]!
+						STRB r5,[r14,#1]!
+						STRB r6,[r14,#1]!
+						STRB r7,[r14,#1]!
+						STRB r8,[r14,#1]!
+						STRB r9,[r14,#1]!
+						STRB r10,[r14,#1]!
+						STRB r11,[r14,#1]!
+						STRB r12,[r14,#1]!
+;-----------------------Post_Indexed Addressing technique to store Fibonacci in data area-----------------
+						ADD  r14,r14,#1
+						STRB r12,[r14],#1
+						STRB r11,[r14],#1
+						STRB r10,[r14],#1
+						STRB r9,[r14],#1
+						STRB r8,[r14],#1
+						STRB r7,[r14],#1
+						STRB r6,[r14],#1
+						STRB r5,[r14],#1
+						STRB r4,[r14],#1
+						STRB r3,[r14],#1
+						STRB r2,[r14],#1
+						STRB r1,[r14],#1
+						STRB r0,[r14],#1
+				
+				BX LR
+				
+				ENDP
+					
+Literal_Pool	PROC
+				LDR r0,=Values
+				LDR r1,=stored_values
+				MOV r12,r0
+				
+loop			LDRH r3,[r0],#2 ; Since it is post_indexed the address of the literal pool is always rewritten after we use and then we perform the addition.
+				LDRH r4,[r0],#2
+				ADD  r5,r3,r4
+				STR	 r5,[r1],#4
+				SUBS r11,r0,r12
+				CMP r11,#16 ; see the difference between the beggining of the literal pool and the end if we have an offset of 16 to get out of the loop.
+				BNE loop
+					
+				
+stop			B	stop;
+Values			DCW 57721,56649, 15328,60606, 51209, 8240, 24310, 42159;
+
+				ENDP
 					
 
-fillStack		PROC
+UADD8_M3		PROC
 	
-				PUSH {r3,r4,r5,LR}	
-				LDR r3,[sp,#16]; Fetching the address of the values.
-				LDR r4,[sp,#20]; Fetching the address of the pole.
+				MOV32 r0,#0x7A30458D
+				MOV32 r1,#0xC3159EAA
+				MOV   r12,#4
+				MOV   r11,#0xFF ; This is the mask that we are going to use.
+						
+Check_1		AND r3,r0,r11	; Keep only the HALFWORD (8 bits) 2 Hexadecimal values that you need.
+				AND	r4,r1,r11	; Same as above
+				ADD r5,r5,r3	; Perform the addition
+				ADD r5,r5,r4	; Perform the addition
+				ADD r6,r6,r11	; We go from: 0xFF -> 0xFFFF -> 0xFFFFFF ...
+				AND r5,r5,r6	; We only want to keep an even number of bytes and the carry goes.
+				LSL r11,r11,#8	; We go from: 0xFF -> 0xFF00 -> 0xFF0000 ...
+				SUBS r12,r12,#1	; Decrement r12
+				CMP  r12,#0		; Compare r12 with 0.
+				BNE Check_1
 				
-loop			MOV r7,r5
-				LDR r5,[r3],#4
-				CMP r7,#0		; If r8 is 0 check if r7 is also 0 if it is that means I am starting a new pole so loop again to get rid
-				BEQ check_r5	; of the zero and get a new value.
-				CMP r5,#0		; Here when r7 is 0 but r8 is not 0 I need to continue
-				BEQ Continue
-				CMP r5,r7
-				BGE Continue	; Branch to Continue if r7 is greater than r8 which means that we are also done with the pole.
+				BX LR
 				
-check_r5		CMP r5,#0
-				BEQ loop
+				ENDP
 
-				STR r5,[r4],#4  ;
+USAD8_M3		PROC
 				
-				B	loop
+				MOV32 r0,#0x7A30458D
+				MOV32 r1,#0xC3159EAA
+				MOV	r11,#0xFF
 				
-Continue		SUBS r3,r3,#4 		; Since I am using a post-indexed addressing that means that I am updating the addressing after performing a value. so before leaving a pole I want to go back one value to use
-				SUBS r4,r4,#4		; it for the checks.
-				STR r3,[sp,#16] 	; I store the value to not lose in the stack pointer so I can POP it as r0.
-				STR r4,[sp,#20]
-				POP{r3,r4,r5,PC}
+				
+Check_2			AND r2,r0,r11 ; When you mask with 0xFF you will keep the last two bytes and put to 0 everything else.
+				AND r3,r1,r11 ; For example: 0xFF for r1 -> 0xAA for the first iteration. 
+				CMP r2,r3
+				ITE GE		;If then else with greater or equal
+				SUBGE r4,r2,r3	;Substract if r2>r3
+				SUBLT r4,r3,r2	; substract if r2<r3
+				ADD r5,r5,r4
+				LSR r0,r0,#8 ;I need to shift right the values to be able to add them.
+				LSR r1,r1,#8 ; I need to shift right the values to be able to add them
+				CMP r0,#0; Jump out the loop when r0 is empty after I do all the right shifts it will get to 0.
+				BNE Check_2
+				
+				BX LR
 				
 				
 				ENDP
 					
-
-move1			PROC
+SMUAD_SMUSD_M3	PROC
+				
+				MOV32 r0,#0x7A30458D
+				MOV32 r1,#0xC3159EAA
+				MOV32 r11,#0xFFFF0000 ; The mask to get the upper the 4 bytes of r0,r1.
+				
+Check_3			AND r3,r0,r11 ;Getting the upper halfword of r0.
+				AND r4,r1,r11 ;Getting the upper halfword of r1.
+				LSR r3,r3,#16 ;Shift right the value of r3 so now it is represented in the Least Significant bits (LSB).
+				LSR r4,r4,#16 ; Shift right the value of r3 so now it is represented in the Least Significant 4 bits (LSB).
+				ADD r4,r4,r11 ; Adding the mask to the upper-part of r4 to change it into its two's compliment.
+				MUL r5,r3,r4  ; Multiply the two values.
+				ADD r6,r6,r5  ; this performs the SMUAD (which is the addition of the two values by multiplying the two values in upper and lower bits).
+				SUB r7,r5,r7  ; Performing the substraction between the two values obtained by the two multiplications. 
+				LSL r0,r0,#16 ; Getting the LSBs in r0 and r1 to be in the uppermost so we can perform the same thing on it.
+				LSL r1,r1,#16
+				CMP r0,#0	  ; When r0 becomes zero that means I have passed through all the values possible.
+				BNE Check_3
+				
+		
 	
-				PUSH {r4,r5,r6,r7,r8,LR}
-				
-				LDR r6,[sp,#24]	; Value of the return value.
-				LDR r5,[sp,#28]	; Value of the address of the destination pole.
-				LDR r4,[sp,#32] ; Value of the address of the source pole.
-				
-				LDR r7,=Pole1
-				CMP r5,r7
-				BEQ perform_move_empty
-				
-				LDR r7,=Pole2
-				CMP r5,r7
-				BEQ perform_move_empty
-				
-				LDR r7,=Pole3
-				CMP r5,r7
-				BEQ perform_move_empty
-				
-
-				
-perform_move	LDR r8,[r4],#-4
-				STR r8,[r5,#4]!
-				MOV r6,#1
-				B return
-
-perform_move_empty LDR r8,[r4],#-4
-				   STR r8,[r5],#4
-				   MOV r6,#1
-				
-return			STR r6,[sp,#24]	;Send the return value to r2
-				STR r5,[sp,#28] ; Send the destination-pole address again.
-				STR r4,[sp,#32]	; Send the source-pole address back.
-				POP	{r4,r5,r6,r7,r8,PC}
-				
+	
 				ENDP
-					
-;Pseudo-code moveN:					
-;M = 0;
-;if (N == 1) 
-;{
-;move1(X, Y, a);
-;#a is the return value: 0-1;# 
-;M = M + a;
-;}
-;else {
-;moveN(X, Z, Y, N-1);
-;M = M + b;
-;move1(X, Y, a);
-;if (a == 0) return;
-;else M = M + 1;
-;moveN(Z, Y, X, N-1);
-;M = M + c;
-;}
-
-					
-					
-					
-
-					
-moveN			PROC
-				
-				PUSH {r4-r9,LR}
-				LDR r7,[sp,#28] ; Fetching the number of disks N.
-				LDR r6,[sp,#32] ; Fetching auxiliary disk Z
-				LDR r5,[sp,#36] ; Fetching the destination disk Y.
-				LDR r4,[sp,#40] ; Fetching the source disk X.
-				CMP r7,#1		; If (N==1) from the pseudocode
-				BEQ perform_move1
-				BNE perform_moveN
-				
-perform_move1	PUSH{r4}
-				PUSH{r5}
-				PUSH {r11} ; Contains the return value of if the performed move happened or not.
-				BL move1
-				POP {r11}
-				POP {r5}
-				POP {r4}
-				ADD r8,r8,r11; r8 contains the value of M and it  here we are doing M=M+a
-				B EndMove
-				
-perform_moveN	PUSH {r4} ; Containing X.
-				PUSH {r6} ; Y -> Z (Destination pole is Z)
- 				PUSH {r5} ; Z -> Y (Auxiliary pole is Y)
-				SUB r7,r7,#1
-				PUSH {r7} ; Now r5 containsc N-1.
-				BL	moveN
-				POP {r9} ; Getting the value of moveN
-				POP {r5}
-				POP {r6}
-				POP {r4}
-				ADD r8,r8,r9; M=M+b
-				PUSH {r4}
-				PUSH {r5}
-				PUSH {r11}
-				BL move1
-				POP {r11}
-				POP {r5}
-				POP {r4}
-				CMP r9,#0
-				BEQ EndMove
-				ADD r8,r8,#1 ; M=M+1
-				PUSH {r6}
-				PUSH {r5}
-				PUSH {r4}
-				SUB r7,r7,#1 ; N-1
-				PUSH {r7}
-				BL moveN
-				POP {r9}; 
-				POP {r4}
-				POP {r5}
-				POP {r6}
-				ADD r8,r8,r9; M=M+c
-				
 				
 				
 	
 				
 				
-				
+
 				
 
-
-EndMove			STR r4,[sp,#40]
-				STR r5,[sp,#36]
-				STR r6,[sp,#32]
-				STR r7,[sp,#28]
-				
-				POP{r4-r7,PC}
-				
-
-				ENDP
-					
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
+
 
 NMI_Handler     PROC
                 EXPORT  NMI_Handler               [WEAK]
