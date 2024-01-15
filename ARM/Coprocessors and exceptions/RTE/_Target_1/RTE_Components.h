@@ -3,7 +3,7 @@
  * Auto generated Run-Time-Environment Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'exception_handling' 
+ * Project: 'coprocessors_and_exceptions' 
  * Target:  'Target 1' 
  */
 
