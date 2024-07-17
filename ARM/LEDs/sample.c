@@ -25,5 +25,6 @@ int main (void)
 	ledEvenOn_OddOff();
 	LED_On(0);
 	LED_Off(0);
+	OddLEDOn_EvenLEDOff();
 	while (1);			/* Loop forever                       */	
 }

@@ -18,3 +18,4 @@ void LED4_off(void);
 void ledEvenOn_OddOff(void);
 void LED_On(unsigned int num);
 void LED_Off(unsigned int num);
+void OddLEDOn_EvenLEDOff(void);

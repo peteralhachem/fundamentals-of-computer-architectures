@@ -17,7 +17,7 @@ void LED4_off(void)
 /* Exercise 03 */
 
 void ledEvenOn_OddOff(void){
-	LPC_GPIO2->FIOCLR |= 0x00000001;
+	LPC_GPIO2->FIOCLR |= 0x000000FF;
 	LPC_GPIO2->FIOPIN |= 0x000000AA;
 }
 
@@ -27,7 +27,7 @@ void ledEvenOn_OddOff(void){
 
 	void LED_On(unsigned int num)
 {
-	LPC_GPIO2->FIOCLR |= 0x000000AA;
+	LPC_GPIO2->FIOCLR |= 0x000000FF;
 	switch (num) 
 		{
 		case 0:
@@ -89,6 +89,12 @@ void LED_Off(unsigned int num)
 				LPC_GPIO2->FIOCLR |= 0x00000001;
 				break;
 	}
+}
+
+void OddLEDOn_EvenLEDOff() {
+
+	LPC_GPIO2->FIOCLR |= 0x000000FF;
+	LPC_GPIO2-> FIOSET |= 0x00000055;
 }
 
 
